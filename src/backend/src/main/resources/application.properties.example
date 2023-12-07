@@ -1,7 +1,7 @@
 ## Datasource
-spring.datasource.url=jdbc:mariadb://localhost:<DB_PORT>/<DB_NAME>
-spring.datasource.username=<DB_USERNAME>
-spring.datasource.password=<DB_PASSWORD>
+spring.datasource.url=jdbc:mariadb://db:3306/dei_xmas
+spring.datasource.username=dei_xmas
+spring.datasource.password=PAb2S6ChphWLELLZ9k68
 spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
 
 ## Jpa

@@ -1,0 +1,41 @@
+services:
+  db:
+    container_name: db
+    image: mariadb
+    restart: "no"
+    volumes:
+      - ./database/data:/var/lib/mysqL
+    # Check if the db is ready
+    healthcheck:
+        test: ["CMD", "mariadb-admin" ,"ping", "-h", "localhost"]
+        timeout: 8s
+        retries: 10
+    env_file:
+      - ./database/.env
+
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Backend.Dockerfile
+    ports:
+      - 8080:8080
+    # Start up only after the db is up and running
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Frontend.Dockerfile
+    ports:
+      - 8081:8081
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - backend
+
+volumes:
+  mariadb:
