@@ -3,6 +3,7 @@ export default class ParticipantDto {
   name?: string;
   istId?: string;
   type?: string;
+  diet?: string;
 
   constructor(obj?: Partial<ParticipantDto>) {
     Object.assign(this, obj);

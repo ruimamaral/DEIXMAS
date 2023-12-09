@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.rnl.dei.deixmas.exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -11,6 +12,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 	private static Logger logger = LoggerFactory.getLogger(CustomExceptionHandler.class);
+
+	// Handle failed argument validation
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public DeixmasExceptionDto validationFailedException(MethodArgumentNotValidException e) {
+		return new DeixmasExceptionDto(e);
+	}
 
 	@ExceptionHandler(DeixmasException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -18,6 +18,10 @@ public class Participant {
 		TEACHER, GRANTEE
 	}
 
+	public enum ParticipantDiet{
+		REGULAR, VEGETARIAN
+	}
+
 	@Id
 	@GeneratedValue
 	private Long id;
@@ -31,7 +35,8 @@ public class Participant {
 	@Column(name = "type", nullable = false)
 	private ParticipantType type;
 
-	// TODO: maybe add more fields? ...or maybe not? what makes sense here?
+	@Column(name = "diet", nullable = false)
+	private ParticipantDiet diet;
 
 	protected Participant() {
 	}

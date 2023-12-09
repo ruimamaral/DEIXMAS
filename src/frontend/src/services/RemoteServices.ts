@@ -20,6 +20,18 @@ export default class RemoteServices {
     return httpClient.post('/participants', participant);
   }
 
+  static async updateParticipant(
+    id: number, participant: ParticipantDto
+  ): Promise<ParticipantDto> {
+    return httpClient.put(`/attendees/${id}`, participant);
+  }
+
+  static async deleteParticipant(
+    id: number
+  ): Promise<ParticipantDto> {
+    return httpClient.delete(`/attendees/${id}`, id);
+  }
+
   static async errorMessage(error: any): Promise<string> {
     if (error.message === 'Network Error') {
       return 'Unable to connect to the server';
