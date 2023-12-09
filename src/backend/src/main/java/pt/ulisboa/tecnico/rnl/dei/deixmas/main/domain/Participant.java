@@ -18,7 +18,7 @@ public class Participant {
 		TEACHER, GRANTEE
 	}
 
-	public enum ParticipantDiet{
+	public enum ParticipantDiet {
 		REGULAR, VEGETARIAN
 	}
 
@@ -41,14 +41,16 @@ public class Participant {
 	protected Participant() {
 	}
 
-	public Participant(String name, String istId, ParticipantType type) {
+	public Participant(String name, String istId, ParticipantType type, ParticipantDiet diet) {
 		this.name = name;
 		this.istId = istId;
 		this.type = type;
+		this.diet = diet;
 	}
 
 	public Participant(ParticipantDto participantDto) {
 		this(participantDto.name(), participantDto.istId(),
-				ParticipantType.valueOf(participantDto.type().toUpperCase()));
+				ParticipantType.valueOf(participantDto.type().toUpperCase()),
+				ParticipantDiet.valueOf(participantDto.diet().toUpperCase()));
 	}
 }

@@ -2,6 +2,8 @@ package pt.ulisboa.tecnico.rnl.dei.deixmas.exceptions;
 
 import java.time.LocalDateTime;
 
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class DeixmasExceptionDto {
@@ -15,6 +17,11 @@ public class DeixmasExceptionDto {
 		this.timestamp = LocalDateTime.now();
 		this.message = e.getMessage();
 		this.code = e.getCode();
+	}
+
+	public DeixmasExceptionDto(MethodArgumentNotValidException e) {
+		this.timestamp = LocalDateTime.now();
+		this.message = e.getMessage();
 	}
 
 	public DeixmasExceptionDto(Throwable e) {

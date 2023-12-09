@@ -23,13 +23,13 @@ export default class RemoteServices {
   static async updateParticipant(
     id: number, participant: ParticipantDto
   ): Promise<ParticipantDto> {
-    return httpClient.put(`/attendees/${id}`, participant);
+    return httpClient.put(`/participants/${id}`, participant);
   }
 
   static async deleteParticipant(
     id: number
   ): Promise<ParticipantDto> {
-    return httpClient.delete(`/attendees/${id}`, id);
+    return httpClient.delete(`/participants/${id}`, id);
   }
 
   static async errorMessage(error: any): Promise<string> {

@@ -30,15 +30,16 @@
         <v-row>
           <v-col cols="4">
 
-            <v-dialog v-model="dialog" persistent width="1024">
+            <v-dialog v-model="editDialog" persistent width="">
               <template v-slot:activator="{ props }">
                 <!-- <v-btn color="primary" v-bind="props"> Open Dialog </v-btn> -->
+                  <!--@click="editing = {...item.raw}"-->
                   <!-- @click="updateAttendee(item.raw.id, item.raw)" -->
                 <v-btn
                   v-bind="props"
                   class="square-button"
                   color="blue"
-                  @click="editing = item.raw"
+                  @click="editing = {...item.raw}"
                   icon
                 >
                   <v-icon>fas fa-pencil</v-icon>
@@ -46,28 +47,33 @@
               </template>
               <v-card>
                 <v-card-title>
-                  <span class="text-h5">Update Participant</span>
+                  <span class="text-h5"> {{ `Editar participante ${editing.id}` }}</span>
                 </v-card-title>
                 <v-card-text>
                   <v-container>
-                    <v-row>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          label="Nome*"
-                          v-model:model-value="editing.name"
-                          required
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          label="Ist ID*"
-                          hint="Formato: ist1xxxxx"
-                          v-model:model-value="editing.istId"
-                          required
-                        ></v-text-field>
-                      </v-col>
+                    <v-form ref="editForm"> 
+                      <v-row>
+                        <v-col cols="14" sm="8" md="4">
+                          <v-text-field
+                            label="Nome*"
+                            v-model="editing.name"
+                            :rules="nameRules"
+                            required
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="6" sm="4" md="3">
+                          <v-text-field
+                            label="Ist ID*"
+                            hint="Formato: ist1xxxxxx"
+                            v-model="editing.istId"
+                            :rules="istIdRules"
+                            required
+                          ></v-text-field>
+                        </v-col>
 
-                    </v-row>
+                      </v-row>
+
+                    </v-form>
                   </v-container>
                   <small>*Campo obrigatório</small>
                 </v-card-text>
@@ -75,15 +81,19 @@
                   <v-spacer></v-spacer>
                   <v-btn
                     color="blue-darken-1"
+                    class="mt-4"
                     variant="text"
-                    @click="dialog = false"
+                    @click="editDialog = false"
                   >
                     Close
                   </v-btn>
                   <v-btn
                     color="blue-darken-1"
+                    :loading="updatingParticipant"
+                    :variant="updatingParticipant? 'tonal' : undefined"
+                    class="mt-4"
                     variant="text"
-                    @click="updateParticipant(editing)"
+                    @click="editParticipant(editing)"
                   >
                     Save
                   </v-btn>
@@ -111,9 +121,21 @@ import RemoteServices from '@/services/RemoteServices';
 import { reactive, ref } from 'vue';
 
 let search = ref('');
+let updatingParticipant = ref(false);
+let name = ref('');
 let loading = ref(true);
-let dialog = false;
-let editing: ParticipantDto = {};
+let editDialog = ref(false);
+let editing: ParticipantDto = ref({});
+let editForm = ref(null);
+let istIdRules = [
+  (v: string) => !!v || 'Ist ID é um campo obrigatório!',
+  (v: string) => /^\ist1[0-9]+$/.test(v) || 'O Ist ID deve respeitar o formato indicado!',
+  (v: string) => (v && v.length <= 10) || 'O Ist ID deve conter 10 ou menos carateres!'
+]
+let nameRules = [
+  (v : string) => !!v || 'Nome é um campo obrigatório',
+  (v: string) => (v && v.length <= 50) || 'O nome deve conter 50 ou menos carateres!'
+]
 const headers = [
   { 
     title: 'ID',
@@ -153,14 +175,22 @@ const headers = [
 
 const participants: ParticipantDto[] = reactive([]);
 
-const updateParticipant = (editing: ParticipantDto) => {
-  
-  console.log(editing.istId);
-  console.log(editing.name);
+const editParticipant = async (editing: ParticipantDto) => {
+  const { valid } = await editForm.value.validate();
+  if (valid) {
+    updatingParticipant.value = true;
+    await RemoteServices.updateParticipant(editing.id, editing);
+    await updateTable();
+    editDialog.value = false;
+    updatingParticipant.value = false;
+  }
 }
 
-RemoteServices.getParticipants().then((data) => {
+const updateTable = async () => RemoteServices.getParticipants().then((data) => {
+  participants.length = 0;
   participants.push(...data);
   loading.value = false;
 });
+
+updateTable();
 </script>

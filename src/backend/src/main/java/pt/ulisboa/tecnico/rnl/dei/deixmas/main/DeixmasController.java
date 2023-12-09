@@ -42,7 +42,7 @@ public class DeixmasController {
 	}
 
 	@PutMapping("/participants/{id}")
-	public ParticipantDto updateParticipant(@PathVariable long id, @Valid @RequestBody ParticipantDto participantDto) {
+	public ParticipantDto updateParticipant(@NotNull @Positive @PathVariable long id, @Valid @RequestBody ParticipantDto participantDto) {
 		return participantService.updateParticipant(id, participantDto);
 	}
 
