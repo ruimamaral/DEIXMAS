@@ -30,7 +30,7 @@
         <v-row>
           <v-col cols="4">
 
-            <v-dialog v-model="editDialog" persistent width="">
+            <v-dialog v-model="editDialog" persistent width="800">
               <template v-slot:activator="{ props }">
                 <!-- <v-btn color="primary" v-bind="props"> Open Dialog </v-btn> -->
                   <!--@click="editing = {...item.raw}"-->
@@ -52,8 +52,8 @@
                 <v-card-text>
                   <v-container>
                     <v-form ref="editForm"> 
-                      <v-row>
-                        <v-col cols="14" sm="8" md="4">
+                      <v-row justify="center">
+                        <v-col cols="28" sm="14" md="7">
                           <v-text-field
                             label="Nome*"
                             v-model="editing.name"
@@ -61,7 +61,7 @@
                             required
                           ></v-text-field>
                         </v-col>
-                        <v-col cols="6" sm="4" md="3">
+                        <v-col cols="12" sm="6" md="3">
                           <v-text-field
                             label="Ist ID*"
                             hint="Formato: ist1xxxxxx"
@@ -70,7 +70,32 @@
                             required
                           ></v-text-field>
                         </v-col>
-
+                      </v-row>
+                      <v-row justify="center">
+                        <v-col cols="20" sm="10" md="5">
+                          <v-select
+                            v-model="editing.type"
+                            :items="types"
+                            :rules="[(v : string) => !!v || 'Tipo é um campo obrigatório!']"
+                            item-value="val"
+                            item-title="text"
+                            label="Tipo"
+                            chips
+                            required
+                          ></v-select>
+                        </v-col>
+                        <v-col cols="20" sm="10" md="5">
+                          <v-select
+                            v-model="editing.diet"
+                            :items="diets"
+                            :rules="[(v : string) => !!v || 'Dieta é um campo obrigatório!']"
+                            item-value="val"
+                            item-title="text"
+                            label="Dieta"
+                            chips
+                            required
+                          ></v-select>
+                        </v-col>
                       </v-row>
 
                     </v-form>
@@ -171,6 +196,16 @@ const headers = [
     sortable: false,
     filterable: false,
   }
+];
+
+const types = [
+  { text: 'Bolseiro', val: 'GRANTEE' },
+  { text: 'Professor', val: 'TEACHER' },
+];
+
+const diets = [
+  { text: 'Normal', val: 'REGULAR' },
+  { text: 'Vegetariana', val: 'VEGETARIAN' },
 ];
 
 const participants: ParticipantDto[] = reactive([]);
