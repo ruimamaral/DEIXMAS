@@ -35,8 +35,10 @@
                 <!-- <v-btn color="primary" v-bind="props"> Open Dialog </v-btn> -->
                   <!-- @click="updateAttendee(item.raw.id, item.raw)" -->
                 <v-btn
+                  v-bind="props"
                   class="square-button"
                   color="blue"
+                  @click="editing = item.raw"
                   icon
                 >
                   <v-icon>fas fa-pencil</v-icon>
@@ -44,36 +46,52 @@
               </template>
               <v-card>
                 <v-card-title>
-                  <span class="text-h5">User Profile</span>
+                  <span class="text-h5">Update Participant</span>
                 </v-card-title>
                 <v-card-text>
                   <v-container>
                     <v-row>
                       <v-col cols="12" sm="6" md="4">
-                        <v-text-field label="Legal first name*" required></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
                         <v-text-field
-                          label="Legal middle name"
-                          hint="example of helper text only on focus"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          label="Legal last name*"
-                          v-model:model-value="name"
-                          hint="example of persistent helper text"
-                          persistent-hint
+                          label="Nome*"
+                          v-model:model-value="editing.name"
                           required
                         ></v-text-field>
                       </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field
+                          label="Ist ID*"
+                          hint="Formato: ist1xxxxx"
+                          v-model:model-value="editing.istId"
+                          required
+                        ></v-text-field>
+                      </v-col>
+
                     </v-row>
                   </v-container>
+                  <small>*Campo obrigatório</small>
                 </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="blue-darken-1"
+                    variant="text"
+                    @click="dialog = false"
+                  >
+                    Close
+                  </v-btn>
+                  <v-btn
+                    color="blue-darken-1"
+                    variant="text"
+                    @click="updateParticipant(editing)"
+                  >
+                    Save
+                  </v-btn>
+                </v-card-actions>
               </v-card>
             </v-dialog>
 
-            <v-btn @click="confirmDelete(item)"
+            <v-btn @click="console.log('delete')"
               class="square-button"
               color="red"
               icon
@@ -95,6 +113,7 @@ import { reactive, ref } from 'vue';
 let search = ref('');
 let loading = ref(true);
 let dialog = false;
+let editing: ParticipantDto = {};
 const headers = [
   { 
     title: 'ID',
@@ -133,6 +152,12 @@ const headers = [
 ];
 
 const participants: ParticipantDto[] = reactive([]);
+
+const updateParticipant = (editing: ParticipantDto) => {
+  
+  console.log(editing.istId);
+  console.log(editing.name);
+}
 
 RemoteServices.getParticipants().then((data) => {
   participants.push(...data);
