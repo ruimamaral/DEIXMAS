@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import pt.ulisboa.tecnico.rnl.dei.deixmas.main.dto.BasketDto;
 import pt.ulisboa.tecnico.rnl.dei.deixmas.main.dto.ParticipantDto;
+import pt.ulisboa.tecnico.rnl.dei.deixmas.main.service.BasketService;
 import pt.ulisboa.tecnico.rnl.dei.deixmas.main.service.ParticipantService;
 
 @Validated
@@ -24,6 +26,8 @@ import pt.ulisboa.tecnico.rnl.dei.deixmas.main.service.ParticipantService;
 public class DeixmasController {
 	@Autowired
 	private ParticipantService participantService;
+	@Autowired
+	private BasketService basketService;
 
 	@GetMapping("/participants")
 	public List<ParticipantDto> getParticipants() {
@@ -50,5 +54,11 @@ public class DeixmasController {
 	public void deleteParticipant(@NotNull @Positive @PathVariable long id) {
 		System.out.println(id);
 		participantService.deleteParticipant(id);
+	}
+
+	@GetMapping("/baskets")
+	public List<BasketDto> getBaskets() {
+		return basketService.getAllBaskets();
+		// return List.of(new ParticipantDto(1, "John Doe", "ist12345", "STUDENT"));
 	}
 }

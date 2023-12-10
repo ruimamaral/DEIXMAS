@@ -74,6 +74,11 @@ const navbarItems: {
         path: '/participants',
         icon: 'fas fa-users',
       },
+      {
+        name: 'Cabazes',
+        path: '/baskets',
+        icon: 'fas fa-basket-shopping',
+      },
     ],
   },
 ];

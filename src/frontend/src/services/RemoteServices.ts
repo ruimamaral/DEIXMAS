@@ -3,6 +3,7 @@ import type { AxiosResponse } from 'axios';
 import { useAppearanceStore } from '@/stores/appearance';
 import DeixmasError from '@/models/DeixmasError';
 import type ParticipantDto from '@/models/ParticipantDto';
+import type BasketDto from '@/models/BasketDto';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 50000;
@@ -30,6 +31,10 @@ export default class RemoteServices {
     id: number
   ): Promise<ParticipantDto> {
     return httpClient.delete(`/participants/${id}`);
+  }
+
+  static async getBaskets(): Promise<BasketDto[]> {
+    return httpClient.get('/baskets');
   }
 
   static async errorMessage(error: any): Promise<string> {

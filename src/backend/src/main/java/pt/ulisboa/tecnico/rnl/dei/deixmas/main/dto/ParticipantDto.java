@@ -9,9 +9,9 @@ import pt.ulisboa.tecnico.rnl.dei.deixmas.main.domain.Participant;
 
 // Data Transfer Object, to communicate with frontend
 public record ParticipantDto(
-		@Positive(message = "Invalid Id") long id,
+		@NotNull @Positive(message = "Invalid Id") long id,
 		@NotBlank(message = "Participant must have a name") String name,
-		@NotNull @Pattern(
+		@NotBlank @Pattern(
 			regexp = "^ist[0-9]+$",
 			message = "istID should abide the appropriate format") String istId,
 		@NotBlank @Pattern(

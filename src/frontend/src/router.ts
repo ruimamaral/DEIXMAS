@@ -6,6 +6,10 @@ const ParticipantsView = () =>
   import('./views/Participants/ParticipantsView.vue');
 const ParticipantsListingView = () =>
   import('./views/Participants/ParticipantsListingView.vue');
+const BasketsView = () =>
+  import('./views/Baskets/BasketsView.vue');
+const BasketsListingView = () =>
+  import('./views/Baskets/BasketsListingView.vue');
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,6 +39,20 @@ const router = createRouter({
         //   meta: { title: 'Participantes - Something' },
         // },
         // ...
+      ],
+    },
+    {
+      path: '/baskets',
+      name: 'baskets',
+      component: BasketsView,
+      meta: { title: 'Cabazes' },
+      children: [
+        {
+          path: '',
+          name: 'baskets-listing',
+          component: BasketsListingView,
+          meta: { title: 'Cabazes' },
+        },
       ],
     },
   ],

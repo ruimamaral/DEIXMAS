@@ -29,3 +29,7 @@ spring.servlet.multipart.max-request-size=215MB
 ## Locale
 spring.jackson.date-format=yyyy-MM-dd HH:mm:ss
 spring.jackson.time-zone=Europe/Lisbon
+
+## External APIs
+api.basketstore.url=https://prohmakas.rnl.tecnico.ulisboa.pt/basket-store/api/v1
+api.basketstore.key=api_key
