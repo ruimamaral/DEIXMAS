@@ -48,6 +48,7 @@ public class DeixmasController {
 
 	@DeleteMapping("/participants/{id}")
 	public void deleteParticipant(@NotNull @Positive @PathVariable long id) {
+		System.out.println(id);
 		participantService.deleteParticipant(id);
 	}
 }

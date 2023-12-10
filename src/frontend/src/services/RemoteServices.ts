@@ -29,7 +29,7 @@ export default class RemoteServices {
   static async deleteParticipant(
     id: number
   ): Promise<ParticipantDto> {
-    return httpClient.delete(`/participants/${id}`, id);
+    return httpClient.delete(`/participants/${id}`);
   }
 
   static async errorMessage(error: any): Promise<string> {
