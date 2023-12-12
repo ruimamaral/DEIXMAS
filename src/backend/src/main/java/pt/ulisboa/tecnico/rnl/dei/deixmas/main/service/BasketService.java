@@ -21,12 +21,12 @@ public class BasketService {
 	private RestTemplate restTemplate;
 
 	public List<BasketDto> getAllBaskets() {
-		BasketDto[] basketsArray = restTemplate.getForObject(apiConfig.getUrl() + "/baskets", BasketDto[].class);
+		BasketDto[] basketsArray = restTemplate.getForObject(
+				apiConfig.getUrl() + "/baskets", BasketDto[].class);
 
 		if (basketsArray != null) {
 			return Arrays.asList(basketsArray);
-		} else {
-			return Collections.emptyList();
 		}
+		return Collections.emptyList();
 	}
 }

@@ -3,13 +3,13 @@ package pt.ulisboa.tecnico.rnl.dei.deixmas.main.dto;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 import pt.ulisboa.tecnico.rnl.dei.deixmas.main.domain.Participant;
 
 // Data Transfer Object, to communicate with frontend
 public record ParticipantDto(
-		@NotNull @Positive(message = "Invalid Id") long id,
+		@NotNull @PositiveOrZero(message = "Invalid Id") long id,
 		@NotBlank(message = "Participant must have a name") String name,
 		@NotBlank @Pattern(
 			regexp = "^ist[0-9]+$",
