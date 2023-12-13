@@ -89,7 +89,7 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-  <v-dialog v-model="removeDialog" persistent width="800">
+  <v-dialog v-model="removeDialog" persistent width="600">
     <v-card>
       <v-card-title>
         <span class="text-h5"> Remover participante </span>

@@ -79,6 +79,11 @@ const navbarItems: {
         path: '/baskets',
         icon: 'fas fa-basket-shopping',
       },
+      {
+        name: 'Sorteios',
+        path: '/raffles',
+        icon: 'fas fa-clover',
+      },
     ],
   },
 ];

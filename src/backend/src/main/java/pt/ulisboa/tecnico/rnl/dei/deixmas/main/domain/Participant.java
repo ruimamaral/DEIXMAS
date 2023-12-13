@@ -11,8 +11,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import org.springframework.context.annotation.Bean;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

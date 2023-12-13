@@ -25,9 +25,10 @@ public class RaffleService {
 				.orElseThrow(() -> new DeixmasException(ErrorMessage.NO_SUCH_RAFFLE, Long.toString(id)));
 	}
 
-	private RaffleDto insertRaffle(Long id, RaffleDto raffleDto) {
+	private RaffleDto insertRaffle(Long id, Boolean orderPlaced, RaffleDto raffleDto) {
 		Raffle raffle = new Raffle(raffleDto);
 		raffle.setId(id);
+		raffle.setOrderPlaced(orderPlaced);
 		return new RaffleDto(raffleRepository.save(raffle));
 	}
 
@@ -40,7 +41,7 @@ public class RaffleService {
 
 	@Transactional
 	public RaffleDto createRaffle(RaffleDto raffleDto) {
-		return insertRaffle(null, raffleDto);
+		return insertRaffle(null, false, raffleDto);
 	}
 
 	@Transactional
@@ -50,9 +51,12 @@ public class RaffleService {
 
 	@Transactional
 	public RaffleDto updateRaffle(long id, RaffleDto raffleDto) {
-		fetchRaffleOrThrow(id); // ensure exists
+		Raffle raffle = fetchRaffleOrThrow(id); // ensure exists
+		if (raffle.getOrderPlaced()) {
+			throw new DeixmasException(ErrorMessage.CANNOT_EDIT, Long.toString(id));
+		}
 
-		return insertRaffle(id, raffleDto);
+		return insertRaffle(id, raffleDto.orderPlaced(), raffleDto);
 	}
 
 	@Transactional

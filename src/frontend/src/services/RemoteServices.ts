@@ -4,6 +4,7 @@ import { useAppearanceStore } from '@/stores/appearance';
 import DeixmasError from '@/models/DeixmasError';
 import type ParticipantDto from '@/models/ParticipantDto';
 import type BasketDto from '@/models/BasketDto';
+import RaffleDto from '@/models/RaffleDto';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 50000;
@@ -36,6 +37,65 @@ export default class RemoteServices {
   static async getBaskets(): Promise<BasketDto[]> {
     return httpClient.get('/baskets');
   }
+
+  static async getRaffles(): Promise<RaffleDto[]> {
+    return httpClient.get('/raffles');
+  }
+
+  static async createRaffles(
+    raffle: RaffleDto
+  ): Promise<RaffleDto> {
+    return httpClient.post('/raffle', raffle);
+  }
+
+  static async updateRaffle(
+    id: number, raffle: RaffleDto
+  ): Promise<RaffleDto> {
+    return httpClient.put(`/raffles/${id}`, raffle);
+  }
+
+  static async deleteRaffle(
+    id: number
+  ): Promise<RaffleDto> {
+    return httpClient.delete(`/raffles/${id}`);
+  }
+
+  static async participate(
+    id: number, raffle_id: number
+  ): Promise<void> {
+    return httpClient.post(`/participants/${id}/raffles/${raffle_id}`);
+  }
+
+  static async leaveRaffle(
+    id: number, raffle_id: number
+  ): Promise<void> {
+    return httpClient.delete(`/participants/${id}/raffles/${raffle_id}`);
+  }
+
+  static async placeOrder(
+    id: number
+  ): Promise<void> {
+    return httpClient.post(`/orders/${id}/}`);
+  }
+
+  static async cancelOrder(
+    id: number
+  ): Promise<void> {
+    return httpClient.delete(`/orders/${id}/}`);
+  }
+
+  static async getParticipating(
+    id: number
+  ): Promise<RaffleDto[]> {
+    return httpClient.get(`/participants/${id}/raffles`);
+  }
+
+  static async getRaffleParticipants(
+    id: number
+  ): Promise<RaffleDto[]> {
+    return httpClient.get(`/raffle/${id}/participants`);
+  }
+
 
   static async errorMessage(error: any): Promise<string> {
     if (error.message === 'Network Error') {

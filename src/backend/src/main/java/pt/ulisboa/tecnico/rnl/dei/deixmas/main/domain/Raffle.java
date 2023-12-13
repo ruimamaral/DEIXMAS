@@ -35,6 +35,9 @@ public class Raffle {
 	@Column(name = "vegetarianOption", nullable = false)
 	private Long vegetarianOption;
 
+	@Column(name = "orderPlaced", nullable = false)
+	private Boolean orderPlaced;
+
     @ManyToMany(mappedBy = "participating")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -47,16 +50,17 @@ public class Raffle {
 	}
 
 	public Raffle(String theme, String date,
-                Long normalOption, Long vegetarianOption) {
+                Long normalOption, Long vegetarianOption, Boolean orderPlaced) {
 		this.theme = theme;
-		this.date= date;
-		this.normalOption= normalOption;
-		this.vegetarianOption= vegetarianOption;
+		this.date = date;
+		this.normalOption = normalOption;
+		this.vegetarianOption = vegetarianOption;
+		this.orderPlaced = orderPlaced;
 	}
 
 	public Raffle(RaffleDto raffleDto) {
 		this(raffleDto.theme(), raffleDto.date(),
-                raffleDto.normalOption(), raffleDto.vegetarianOption());
+                raffleDto.normalOption(), raffleDto.vegetarianOption(), raffleDto.orderPlaced());
 	}
 }
 

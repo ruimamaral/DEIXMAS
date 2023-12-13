@@ -4,7 +4,7 @@ export default class BasketDto {
   description?: string;
   unitPrice?: number;
   unitWeight?: number;
-  vegetarian?: string;
+  vegetarian?: boolean;
 
   constructor(obj?: Partial<BasketDto>) {
     Object.assign(this, obj);
