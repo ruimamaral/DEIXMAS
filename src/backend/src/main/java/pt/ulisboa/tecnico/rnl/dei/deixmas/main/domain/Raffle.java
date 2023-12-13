@@ -26,6 +26,7 @@ public class Raffle {
 	@Column(name = "theme", nullable = false)
 	private String theme;
 
+	// There can't be two raffles on the same day due to BasketStore limitations
 	@Column(name = "date", nullable = false, unique = true)
 	private String date;
 

@@ -1,40 +1,40 @@
 <template>
-  <h2>Sorteios de Cabazes</h2>
-  <v-text-field
-    v-model="search"
-    append-inner-icon="fas fa-search"
-    label="Pesquisar"
-    single-line
-    hide-details
-  />
+  <v-container>
+    <v-row>
+      <v-spacer></v-spacer>
+    </v-row>
+    <v-row>
+      <v-col align-self="start">
+        <h2>Sorteios de Cabazes</h2>
+      </v-col>
+      <v-col class="text-end">
+        <v-btn
+          flat
+          color="blue-darken-1"
+          size="large"
+          @click="showCreate"
+        >
+          Criar Sorteio
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-spacer></v-spacer>
+    </v-row>
+    <v-row>
+      <v-text-field
+        v-model="search"
+        append-inner-icon="fas fa-search"
+        label="Pesquisar"
+        single-line
+        hide-details
+      />
+    </v-row>
+  </v-container>
   <v-dialog v-model="editDialog" persistent width="800">
-    <v-dialog v-model="editDateDialog">
-      <v-container>
-        <v-row justify="space-around">
-          <v-date-picker 
-            v-model="editDate"
-            :min="new Date()"
-            elevation="24"
-          >
-            Escolha a data do sorteio
-          </v-date-picker>
-        </v-row>
-        <v-row justify="space-around">
-          <v-btn
-            outline
-            color="blue-darken-1"
-            variant="text"
-            size="x-large"
-            @click="confirmDate()"
-          >
-            Confirmar
-          </v-btn>
-        </v-row>
-      </v-container>
-    </v-dialog>
     <v-card>
       <v-card-title>
-        <span class="text-h5"> {{ `Editar Sorteio ${editing.id}` }}</span>
+        <span class="text-h5"> {{ dialogTitle }}</span>
       </v-card-title>
       <v-card-text>
         <v-container>
@@ -52,7 +52,7 @@
                 <v-text-field
                   label="Data*"
                   v-model="editing.date"
-                  @click="editDateDialog = true"
+                  type="date"
                   required
                 ></v-text-field>
               </v-col>
@@ -103,7 +103,7 @@
           :loading="updatingRaffle"
           :variant="updatingRaffle? 'tonal' : undefined"
           size="x-large"
-          @click="editRaffle(editing)"
+          @click="confirmButton(editing)"
         >
           Guardar
         </v-btn>
@@ -113,10 +113,10 @@
   <v-dialog v-model="removeDialog" persistent width="800">
     <v-card>
       <v-card-title>
-        <span class="text-h5"> Remover rafflee </span>
+        <span class="text-h5">Cancelar sorteio</span>
       </v-card-title>
       <v-card-text>
-        {{ `Tem a certeza que pretende remover o sorteio ${removing.id} do sistema?` }}
+        {{ `Tem a certeza que pretende remover o sorteio ${removing.id}?` }}
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -136,7 +136,7 @@
           size="large"
           @click="removeRaffle(removing)"
         >
-          Remover
+          Sim
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -197,16 +197,17 @@ let updatingRaffle = ref(false);
 let removingRaffle = ref(false);
 let loading = ref(true);
 let editDialog = ref(false);
-let editDateDialog = ref(false);
-let editDate = ref(new Date());
 let removeDialog = ref(false);
 let editing = ref(new RaffleDto());
 let removing = ref(new RaffleDto());
 let editForm = ref(null);
-let ThemeRules = [
+let themeRules = [
   (v : string) => !!v || 'Tema é um campo obrigatório',
   (v: string) => (v && v.length <= 100) || 'O tema deve conter 100 ou menos carateres!'
 ]
+let confirmButton: (raffle: RaffleDto) => Promise<void>;
+let dialogTitle: string;
+
 const headers = [
   { 
     title: 'Tema',
@@ -234,27 +235,23 @@ const raffles: RaffleDto[] = reactive([]);
 const vegetarianOptions: BasketDto[] = reactive([]);
 const normalOptions: BasketDto[] = reactive([]);
 
-const showEdit = (raffle: RaffleDto) => {
-  editing.value = {...raffle};
-  editDate.value = new Date(editing.value.date);
-  editDialog.value = true;
-}
-
-const showRemove = (raffle: RaffleDto) => {
-  removing.value = {...raffle};
-  removeDialog.value = true;
-}
-
-const confirmDate = () => {
-  editDateDialog.value = false;
-  editing.value.date = editDate.value.toISOString().substring(0, 10);
-}
 
 const editRaffle = async (raffle: RaffleDto) => {
   const { valid } = await editForm.value.validate();
   if (valid) {
     updatingRaffle.value = true;
     await RemoteServices.updateRaffle(raffle.id, raffle);
+    await updateTable();
+    editDialog.value = false;
+    updatingRaffle.value = false;
+  }
+}
+
+const createRaffle = async (raffle: RaffleDto) => {
+  const { valid } = await editForm.value.validate();
+  if (valid) {
+    updatingRaffle.value = true;
+    await RemoteServices.createRaffle(raffle);
     await updateTable();
     editDialog.value = false;
     updatingRaffle.value = false;
@@ -269,9 +266,27 @@ const removeRaffle = async (raffle: RaffleDto) => {
   removingRaffle.value = false;
 }
 
+const showEdit = (raffle: RaffleDto) => {
+  editing.value = {...raffle};
+  editDialog.value = true;
+  dialogTitle = `Editar Sorteio ${editing.id}`;
+  confirmButton = editRaffle;
+}
+
+const showCreate = (raffle: RaffleDto) => {
+  editing.value = {...new RaffleDto()};
+  editDialog.value = true;
+  dialogTitle = `Criar Sorteio`;
+  confirmButton = createRaffle;
+}
+
+const showRemove = (raffle: RaffleDto) => {
+  removing.value = {...raffle};
+  removeDialog.value = true;
+}
+
 const updateTable = async () => RemoteServices.getRaffles().then((data) => {
   raffles.length = 0;
-  fetchBasketOptions();
   raffles.push(...data);
   loading.value = false;
 });
@@ -283,5 +298,6 @@ const fetchBasketOptions = async () => RemoteServices.getBaskets().then((baskets
   vegetarianOptions.push(...baskets.filter(basket => basket.vegetarian));
 });
 
+fetchBasketOptions();
 updateTable();
 </script>

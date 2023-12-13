@@ -42,10 +42,11 @@ export default class RemoteServices {
     return httpClient.get('/raffles');
   }
 
-  static async createRaffles(
+  static async createRaffle(
     raffle: RaffleDto
   ): Promise<RaffleDto> {
-    return httpClient.post('/raffle', raffle);
+    console.log(raffle);
+    return httpClient.post('/raffles', raffle);
   }
 
   static async updateRaffle(

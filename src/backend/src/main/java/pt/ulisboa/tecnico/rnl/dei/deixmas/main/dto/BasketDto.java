@@ -16,6 +16,6 @@ public record BasketDto(
 		@NotBlank @Pattern(
 			regexp = "^(true|false)$",
 			message = "Invalid vegetarian field"
-		) String vegetarian
+		) boolean vegetarian
 	) {
 }
