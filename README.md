@@ -14,4 +14,4 @@ cp frontend/.env.example frontend/.env
 
 4. No evento do reinício da aplicação, correr `docker-compose down -v` antes de a voltar a iniciar.
 
-NOTA: Projeto inacabado devido a falta de tempo.
+NOTA: Projeto inacabado.
