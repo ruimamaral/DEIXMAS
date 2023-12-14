@@ -1,4 +1,4 @@
-## WedX
+## DEIXMAS
 
 ### Setup:
 
@@ -8,5 +8,10 @@ cp backend/src/main/resources/application.properties.example backend/src/main/re
 cp database/.env.example database/.env
 cp frontend/.env.example frontend/.env
 ```
+2. Preencher a propriedade `api.basketstore.key` no ficheiro `backend/src/main/resources/application.properties` com a chave da api BasketStore.
 
-2. Ainda na diretoria `src/` correr `docker-compose up --build`.
+3. Ainda na diretoria `src/` correr `docker-compose up --build`.
+
+4. No evento do reinício da aplicação, correr `docker-compose down -v` antes de a voltar a iniciar.
+
+NOTA: Projeto inacabado devido a falta de tempo.
