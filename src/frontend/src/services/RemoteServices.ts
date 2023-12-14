@@ -41,6 +41,12 @@ export default class RemoteServices {
   static async getRaffles(): Promise<RaffleDto[]> {
     return httpClient.get('/raffles');
   }
+  
+  static async getRaffle(
+    id: number
+  ): Promise<RaffleDto> {
+    return httpClient.get(`/raffles/${id}`);
+  }
 
   static async createRaffle(
     raffle: RaffleDto
@@ -94,7 +100,7 @@ export default class RemoteServices {
   static async getRaffleParticipants(
     id: number
   ): Promise<RaffleDto[]> {
-    return httpClient.get(`/raffle/${id}/participants`);
+    return httpClient.get(`/raffles/${id}/participants`);
   }
 
 

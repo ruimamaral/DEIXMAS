@@ -14,6 +14,8 @@ const RafflesView = () =>
   import('./views/Raffles/RafflesView.vue');
 const RafflesListingView = () =>
   import('./views/Raffles/RafflesListingView.vue');
+const RaffleDetailsView = () =>
+  import('./views/Raffles/RaffleDetailsView.vue');
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -70,6 +72,12 @@ const router = createRouter({
           name: 'raffles-listing',
           component: RafflesListingView,
           meta: { title: 'Sorteios' },
+        },
+        {
+          path: ':id',
+          name: 'raffle-details',
+          component: RaffleDetailsView,
+          meta: { title: 'Detalhes do Sorteio' },
         },
       ],
     },

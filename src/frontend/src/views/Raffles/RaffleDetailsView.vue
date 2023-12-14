@@ -5,18 +5,30 @@
     </v-row>
     <v-row>
       <v-col align-self="start">
-        <h2>Sorteios de Cabazes</h2>
+        <h2> {{ `Sorteio ${raffleId}` }} </h2>
       </v-col>
       <v-col class="text-end">
         <v-btn
           flat
           color="blue-darken-1"
           size="large"
-          @click="showCreate"
+          @click="showEdit"
         >
-          Criar Sorteio
+          Editar Sorteio
         </v-btn>
       </v-col>
+    </v-row>
+    <v-row>
+      <v-spacer></v-spacer>
+    </v-row>
+    <v-row>
+
+    </v-row>
+    <v-row>
+      <v-spacer></v-spacer>
+    </v-row>
+    <v-row>
+      <h2> {{ `Participantes inscritos` }} </h2>
     </v-row>
     <v-row>
       <v-spacer></v-spacer>
@@ -34,7 +46,7 @@
   <v-dialog v-model="editDialog" persistent width="800">
     <v-card>
       <v-card-title>
-        <span class="text-h5"> {{ dialogTitle }}</span>
+        <span class="text-h5"> {{ `Editar Sorteio ${raffle.id}` }}</span>
       </v-card-title>
       <v-card-text>
         <v-container>
@@ -67,7 +79,6 @@
                   item-title="name"
                   item-value="id"
                   label="Opção de Cabaz Normal"
-                  required
                 ></v-autocomplete>
               </v-col>
               <v-col cols="20" sm="10" md="5">
@@ -79,7 +90,6 @@
                   item-title="name"
                   item-value="id"
                   label="Opção de Cabaz Vegetariano"
-                  required
                 ></v-autocomplete>
               </v-col>
             </v-row>
@@ -105,9 +115,9 @@
           :loading="updatingRaffle"
           :variant="updatingRaffle? 'tonal' : undefined"
           size="x-large"
-          @click="confirmButton(editing)"
+          @click="editRaffle()"
         >
-          Confirmar
+          Guardar
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -136,7 +146,7 @@
           :loading="removingRaffle"
           :variant="removingRaffle? 'tonal' : undefined"
           size="large"
-          @click="removeRaffle(removing)"
+          @click="removeRaffle()"
         >
           Sim
         </v-btn>
@@ -145,29 +155,29 @@
   </v-dialog>
   <v-data-table
     :headers="headers"
-    :items="raffles"
+    :items="participants"
     :search="search"
     :loading="loading"
     item-key="id"
-    no-data-text="Sem sorteios a apresentar."
+    no-data-text="Este sorteio não tem participantes inscritos."
   >
+    <template v-slot:item.type="{ item }">
+      <v-chip
+        v-if="item.raw.type === 'TEACHER'"
+        color="purple"
+        text-color="white"
+      >
+        Professor
+      </v-chip>
+      <v-chip v-else color="green" text-color="white"> Bolseiro </v-chip>
+    </template>
     <template v-slot:item.actions="{ item }">
       <v-row no-gutters>
         <v-col cols="2">
           <v-btn
             class="square-button"
-            color="blue"
-            @click="showEdit(item.raw)"
-            icon
-          >
-            <v-icon>mdi-pencil</v-icon>
-          </v-btn>
-        </v-col>
-        <v-col cols="2">
-          <v-btn
-            class="square-button"
             color="red"
-            @click="showRemove(item.raw)"
+            @click="showRemoveParticipant(item.raw)"
             icon
           >
             <v-icon>fas fa-trash</v-icon>
@@ -183,7 +193,11 @@ import BasketDto from '@/models/BasketDto';
 import RaffleDto from '@/models/RaffleDto';
 import RemoteServices from '@/services/RemoteServices';
 import { reactive, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
+const router = useRoute();
+let raffleId = ref(router.params.id);
+let raffle = ref(new RaffleDto())
 let search = ref('');
 let updatingRaffle = ref(false);
 let removingRaffle = ref(false);
@@ -197,23 +211,34 @@ let themeRules = [
   (v : string) => !!v || 'Tema é um campo obrigatório',
   (v: string) => (v && v.length <= 100) || 'O tema deve conter 100 ou menos carateres!'
 ]
-let confirmButton: (raffle: RaffleDto) => Promise<void>;
-let dialogTitle: string;
-
 const headers = [
   { 
-    title: 'Tema',
-    key: 'theme',
-    value: 'theme',
+    title: 'ID',
+    key: 'id',
+    value: 'id',
     sortable: true,
     filterable: false
   },
   {
-    title: 'Data',
-    key: 'date',
-    value: 'date',
+    title: 'Nome',
+    key: 'name',
+    value: 'name',
     sortable: true,
     filterable: true,
+  },
+  {
+    title: 'IST ID',
+    key: 'istId',
+    value: 'istId',
+    sortable: true,
+    filterable: true,
+  },
+  {
+    title: 'Tipo',
+    key: 'type',
+    value: 'type',
+    sortable: true,
+    filterable: false,
   },
   {
     title: 'Ações',
@@ -223,52 +248,32 @@ const headers = [
   }
 ];
 
-const raffles: RaffleDto[] = reactive([]);
+const participants: RaffleDto[] = reactive([]);
 const vegetarianOptions: BasketDto[] = reactive([]);
 const normalOptions: BasketDto[] = reactive([]);
 
-const editRaffle = async (raffle: RaffleDto) => {
+const editRaffle = async () => {
   const { valid } = await editForm.value.validate();
   if (valid) {
     updatingRaffle.value = true;
-    await RemoteServices.updateRaffle(raffle.id, raffle);
-    await updateTable();
+    await RemoteServices.updateRaffle(raffle.value.id, editing.value);
+    await updateRaffle();
     editDialog.value = false;
     updatingRaffle.value = false;
   }
 }
 
-const createRaffle = async (raffle: RaffleDto) => {
-  const { valid } = await editForm.value.validate();
-  if (valid) {
-    updatingRaffle.value = true;
-    await RemoteServices.createRaffle(raffle);
-    await updateTable();
-    editDialog.value = false;
-    updatingRaffle.value = false;
-  }
-}
-
-const removeRaffle = async (raffle: RaffleDto) => {
+const removeRaffle = async () => {
   removingRaffle.value = true;
-  await RemoteServices.deleteRaffle(raffle.id);
-  await updateTable();
+  await RemoteServices.deleteRaffle(raffle.value.id);
   removeDialog.value = false;
   removingRaffle.value = false;
+  router.push('/raffles')
 }
 
-const showEdit = (raffle: RaffleDto) => {
-  editing.value = {...raffle};
+const showEdit = () => {
+  editing.value = {...raffle.value};
   editDialog.value = true;
-  dialogTitle = `Editar Sorteio ${editing.value.id}`;
-  confirmButton = editRaffle;
-}
-
-const showCreate = (raffle: RaffleDto) => {
-  editing.value = {...new RaffleDto()};
-  editDialog.value = true;
-  dialogTitle = `Criar Sorteio`;
-  confirmButton = createRaffle;
 }
 
 const showRemove = (raffle: RaffleDto) => {
@@ -276,10 +281,13 @@ const showRemove = (raffle: RaffleDto) => {
   removeDialog.value = true;
 }
 
-const updateTable = async () => RemoteServices.getRaffles().then((data) => {
-  raffles.length = 0;
-  raffles.push(...data);
+const updateRaffle = async () => RemoteServices.getRaffle(raffleId.value).then((raf) => {
+  raffle.value = {...raf};
   loading.value = false;
+});
+
+const fetchParticipants = async () => RemoteServices.getRaffleParticipants(raffleId.value).then((raffleParticipants) => {
+  participants.push(...raffleParticipants);
 });
 
 const fetchBasketOptions = async () => RemoteServices.getBaskets().then((baskets) => {
@@ -290,5 +298,6 @@ const fetchBasketOptions = async () => RemoteServices.getBaskets().then((baskets
 });
 
 fetchBasketOptions();
-updateTable();
+updateRaffle();
+fetchParticipants();
 </script>
